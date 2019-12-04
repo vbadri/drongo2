@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="peopleTemplate.xhtml">
+        <ui:define name="content">
+            <p:spacer height="50"/>
+            <h:form id="pfMemberListForm">  
+
+                <p:growl id="pfMemberListMessages" showDetail="true" life="3000"/> 
+
+                <p:dataTable var="pfMember" 
+                             value="#{pfMembersBean.pfMemberList}" 
+                             rowsPerPageTemplate="5,10,15" 
+                             rowKey="#{pfMember.id}" 
+                             paginator="true" 
+                             rows="10" 
+                             filteredValue="#{pfMembersBean.filteredPfMembers}" 
+                             id="pfMembersTable" 
+                             emptyMessage="#{messages.label_emptyRecords}"
+                             sortMode="multiple">  
+
+                    <f:facet name="header">
+                        #{messages.label_pfMember}
+                    </f:facet>  
+
+                    <p:column headerText="#{messages.persons_lastname}"  sortBy="#{pfMember.lastname}" filterBy="#{pfMember.lastname}" id="lastname">  
+                        <h:outputText value="#{pfMember.lastname}"/>
+                    </p:column>
+
+                    <p:column headerText="#{messages.persons_firstname}" sortBy="#{pfMember.firstname}" filterBy="#{pfMember.firstname}" id="firstname">  
+                        <h:outputText value="#{pfMember.firstname}" />
+                    </p:column>  
+
+                    <p:column headerText="#{messages.persons_email}" sortBy="#{pfMember.email}" filterBy="#{pfMember.email}" id="email">  
+                        <h:outputText value="#{pfMember.email}" />
+                    </p:column>  
+
+                    <p:column headerText="#{messages.persons_phone}" sortBy="#{pfMember.phone}" filterBy="#{pfMember.phone}" id="phone">  
+                        <h:outputText value="#{pfMember.phone}" />
+                    </p:column>  
+                    
+                    <p:column headerText="#{messages.pfMember_office}" sortBy="#{pfMember.office}" filterBy="#{pfMember.office}" id="office">
+                        <h:outputText value="#{pfMember.office}" />
+                    </p:column>
+
+                    <p:column headerText="#{messages.pfMember_memberSince}" sortBy="#{pfMember.memberSince}" id="registered">
+                        <h:outputText value="#{pfMember.memberSince}">
+                            <f:convertDateTime dateStyle="long" type="date" />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column style="width: 5px">
+                        <p:commandLink id="editButton" action="#{pfMembersBean.editPfMember}">
+                            <h:panelGroup styleClass="ui-icon ui-icon-pencil" />
+                            <f:setPropertyActionListener value="#{pfMember}" target="#{pfMembersBean.selectedPfMember}" />
+                        </p:commandLink>
+                        <p:tooltip for="editButton" value="#{messages.label_edit}" /> 
+                    </p:column>  
+
+                    <p:column style="width: 5px">
+                        <p:commandLink id="deleteButton" oncomplete="deleteDlg.show();" update=":deleteDialog" title="#{messages.label_delete}">
+                            <h:panelGroup styleClass="ui-icon ui-icon-trash" />
+                            <f:setPropertyActionListener value="#{pfMember}" target="#{pfMembersBean.selectedPfMember}" />
+                        </p:commandLink>
+                        <p:tooltip for="deleteButton" value="#{messages.label_delete}" /> 
+                    </p:column>
+
+                    <p:columnGroup type="footer">
+                        <p:row>  
+                            <p:column colspan="8" footerText="#{pfMembersBean.pfMemberNumber} #{messages.label_pfMember}"  />
+                        </p:row>  
+                    </p:columnGroup>
+
+                    <f:facet name="footer">  
+                        <p:commandButton value="#{messages.label_newPfMember}" icon="ui-icon-plus" action="#{pfMembersBean.createNewPfMember}"/>
+                    </f:facet>
+
+                </p:dataTable>
+            </h:form>
+            
+            <p:confirmDialog widgetVar="deleteDlg" id="deleteDialog" header="#{pfMembersBean.selectedPfMember.firstname} #{pfMembersBean.selectedPfMember.lastname}" message="#{messages.label_confirm_deletion}"
+                             closable="false" showEffect="fade" hideEffect="explode" severity="alert" appendToBody="true" >
+                <h:form id="deleteForm">
+                    <h:panelGroup layout="block" style="text-align: right">
+                        <p:commandButton value="#{messages.label_confirm_deletion}" actionListener="#{pfMembersBean.deleteClient}" update=":pfMemberListForm:pfMemberListMessages, :pfMemberListForm:pfMembersTable" oncomplete="deleteDlg.hide();" />
+                        <p:commandButton value="#{messages.label_cancel}" actionListener="#{pfMembersBean.cancelDeletion}" update=":pfMemberListForm:pfMemberListMessages" oncomplete="deleteDlg.hide();" />
+                    </h:panelGroup>
+                </h:form>
+            </p:confirmDialog>
+            
+        </ui:define>
+    </ui:composition>
+</html>
